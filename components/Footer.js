@@ -11,13 +11,12 @@ const Footer = () => {
 
 const styles = StyleSheet.create({
   footerContainer: {
-    backgroundColor: '#27272a',
-    paddingVertical: 16,
+    backgroundColor: '#3f3f46', // zinc-700
+    padding: 10,
     alignItems: 'center',
   },
   footerText: {
     color: '#D4D4D8',
-    textAlign: 'center',
   },
 });
 

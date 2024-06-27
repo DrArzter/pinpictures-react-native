@@ -1,83 +1,38 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import * as utils from '../utils';
-import FullScreenImage from './FullScreenImage';
+import React from 'react';
+import { createStackNavigator } from '@react-navigation/stack';
+import { View, StyleSheet } from 'react-native';
+import Posts from '../pages/Posts';
+import Authentication from '../pages/Authentication';
 
-const Main = () => {
-  const [posts, setPosts] = useState([]);
-  const [selectedImage, setSelectedImage] = useState(null);
+const Stack = createStackNavigator();
 
-  useEffect(() => {
-    utils.getPosts().then(fetchedPosts => setPosts(fetchedPosts));
-  }, []);
-
-  const openFullScreenImage = (imageUrl) => {
-    console.log('Opening image:', imageUrl);
-    setSelectedImage(imageUrl);
-  };
-
-  const closeFullScreenImage = () => {
-    setSelectedImage(null);
-  };
-
+const Main = ({ user, setUser }) => {
   return (
-    <ScrollView style={styles.mainContainer}>
-      {posts.map((post) => (
-        <View key={post.id} style={styles.postContainer}>
-          {post.images && (
-            <View style={styles.imageContainer}>
-              {post.images.map((image) => (
-                <View style={styles.imageWrapper} key={image.id}>
-                  <TouchableOpacity onPress={() => openFullScreenImage(`${utils.config.apiUrl.replace("/api", "")}/${image.picpath}`)}>
-                    <Image
-                      source={{ uri: `${utils.config.apiUrl.replace("/api", "")}/${image.picpath}` }}
-                      style={styles.image}
-                      resizeMode="cover"
-                    />
-                  </TouchableOpacity>
-                </View>
-              ))}
-            </View>
+    <View style={styles.container}>
+      <Stack.Navigator initialRouteName={user ? "Posts" : "Authentication"}>
+        <Stack.Screen name="Posts" options={{ headerShown: false }}>
+          {({ navigation }) => (
+            <Posts
+              user={user}
+              setUser={setUser}
+              navigation={navigation}
+            />
           )}
-          <Text style={styles.postText}>{post.name}</Text>
-        </View>
-      ))}
-      {selectedImage && <FullScreenImage imageUrl={selectedImage} onClose={closeFullScreenImage} />}
-    </ScrollView>
+        </Stack.Screen>
+        <Stack.Screen name="Authentication" options={{ headerShown: false }}>
+          {({ navigation }) => (
+            <Authentication setUser={setUser} navigation={navigation} />
+          )}
+        </Stack.Screen>
+      </Stack.Navigator>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  mainContainer: {
+  container: {
     flex: 1,
-    backgroundColor: '#3f3f46',
-  },
-  postContainer: {
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#52525b',
-  },
-  postText: {
-    color: '#e4e4e7',
-    marginTop: 8,
-  },
-  imageContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    width: '100%',
-    marginBottom: 16,
-  },
-  imageWrapper: {
-    flexGrow: 1,
-    flexShrink: 0,
-    minWidth: 150,
-    padding: 4,
-  },
-  image: {
-    width: '100%',
-    height: undefined,
-    aspectRatio: 1,
-    borderRadius: 8,
+    backgroundColor: '#27272a', // zinc-800
   },
 });
 
